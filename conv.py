@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-version=(0,1,0,20100105)
+version=(0,1,0,20100115)
 
 import sys,os,subprocess
 sys.path.append(os.path.join(os.path.dirname(sys.argv[0]),'lib'))
@@ -154,7 +154,7 @@ class GUI(object):
 			print '%s __getattribute__: %s'%(self,key)
 			raise
 	def __init__(self):
-		self.ui=gtkutil.GladeUI(os.path.join(os.path.split(sys.argv[0])[0],'conv.glade'),self)
+		self.ui=gtkutil.GtkBuilderHelper(os.path.join(os.path.split(sys.argv[0])[0],'conv.ui'),self)
 
 		self.rcfile=os.path.expanduser(os.path.join('~','.convert_guirc'))
 
