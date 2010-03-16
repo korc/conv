@@ -131,6 +131,28 @@ class RBinCodec(codecs.Codec):
 class RBinReader(RBinCodec,codecs.StreamReader): pass
 class RBinWriter(RBinCodec,codecs.StreamWriter): pass
 
+class HexDumpCodec(codecs.Codec):
+	bytecount=16
+	@classmethod
+	def prn_dot(cls,txt):
+		return "".join([c if ord(c)>0x20 and ord(c)<0x7f else "." for c in txt])
+	@staticmethod
+	def encode(input,errors="strict"):
+		outlines=[]
+		bc=HexDumpCodec.bytecount
+		for idx in range(0,len(input),bc):
+			b=[" ".join(["%02x"%ord(c) for c in input[idx+j:idx+j+4]]) for j in range(0,bc,4)] 
+			outlines.append(("%%08X  %%-%ds%%s"%(bc*3+len(b)))%(idx,"  ".join(b),HexDumpCodec.prn_dot(input[idx:idx+bc])))
+		return ("\n".join(outlines),len(input))
+	decode_re=re.compile(r'^(?P<offset>[0-9a-f]+) ?(?P<hex>(?:  ?[0-9a-fA-F]{2})+)  \S*')
+	@staticmethod
+	def decode(input,errors="strict"):
+		output=[]
+		for line in input.split("\n"):
+			match=HexDumpCodec.decode_re.match(line)
+			output.append(match.group("hex").replace(" ","").decode("hex"))
+		return ("".join(output),len(input))
+
 def codec_reg(name):
 	if name=='nasm':
 		return (nasm_encode,nasm_decode,NasmReader,NasmWriter)
@@ -142,6 +164,8 @@ def codec_reg(name):
 		return (bin_encode,bin_decode,BinReader,BinWriter)
 	elif name=='rbin':
 		return (rbin_encode,rbin_decode,RBinReader,RBinWriter)
+	elif name=="hexdump":
+		return codecs.CodecInfo(name="hexdump",encode=HexDumpCodec.encode,decode=HexDumpCodec.decode)
 
 def reg(): codecs.register(codec_reg)
 
@@ -263,7 +287,7 @@ class GUI(object):
 			self.add_conv(True,True,'string_escape')
 			return True
 		self.ui.outtext.get_buffer().set_text(text)
-		for x in self.sbstack: self.ui.sbar.remove(self.sbctx,x)
+		for x in self.sbstack: self.ui.sbar.remove_message(self.sbctx,x)
 		return False
 
 	def on_conv_changed(self,*args):
