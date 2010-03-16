@@ -152,7 +152,7 @@ class GUI(object):
 			print '%s __getattribute__: %s'%(self,key)
 			raise
 	def __init__(self):
-		self.ui=gtkutil.GtkBuilderHelper(os.path.join(os.path.split(sys.argv[0])[0],'conv.ui'),self)
+		self.ui=GtkBuilderHelper(os.path.join(os.path.split(sys.argv[0])[0],'conv.ui'),self)
 
 		self.rcfile=os.path.expanduser(os.path.join('~','.convert_guirc'))
 
@@ -295,7 +295,7 @@ if __name__=='__main__':
 	reg()
 	if len(sys.argv)==1:
 		import gtk,gobject,pango
-		from krutils.gtkutil import GladeUI
+		from krutils.gtkutil import GtkBuilderHelper
 		GUI().run()
 	else:
 		try: (opts,args)=getopt.getopt(sys.argv[1:],'e:d:a:')
