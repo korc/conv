@@ -179,6 +179,7 @@ class GUI(object):
 		self.ui=GtkBuilderHelper(os.path.join(os.path.split(sys.argv[0])[0],'conv.ui'),self)
 
 		self.rcfile=os.path.expanduser(os.path.join('~','.convert_guirc'))
+		self.savefile=None
 
 		self.in_buf=self.ui.intext.get_buffer()
 		self.in_buf.connect('changed',self.schedule_change)
@@ -293,9 +294,63 @@ class GUI(object):
 	def on_conv_changed(self,*args):
 		self.schedule_change()
 
+	def on_quit(self,*args):
+		self.save_settings(self.rcfile)
+		gtk.main_quit()
+	def on_new(self,*args): self.reset()
+	def on_saveas(self,*args):
+		savefile=self.ask_savefile()
+		if savefile:
+			self.savefile=savefile
+			self.save_data()
+
+	def on_save(self,*args): self.save_data()
+	def save_data(self):
+		if self.savefile is None:
+			self.savefile=self.ask_savefile()
+			if self.savefile is None: return
+		self.save_settings(self.savefile)
+
+	def ask_openfile(self):
+		dlg=gtk.FileChooserDialog("Load from",
+			buttons=(gtk.STOCK_OK, gtk.RESPONSE_ACCEPT),
+			action=gtk.FILE_CHOOSER_ACTION_OPEN)
+		dlg.show()
+		ret_code=dlg.run()
+		ret=None
+		if ret_code==gtk.RESPONSE_DELETE_EVENT: pass
+		elif ret_code==gtk.RESPONSE_ACCEPT: ret=dlg.get_filename()
+		dlg.destroy()
+		return ret
+
+	def on_open(self,*args):
+		loadfile=self.ask_openfile()
+		if loadfile:
+			self.load_settings(loadfile)
+			self.savefile=loadfile
+
+	def ask_savefile(self):
+		dlg=gtk.FileChooserDialog("Save to",
+			buttons=(gtk.STOCK_OK, gtk.RESPONSE_ACCEPT),
+			action=gtk.FILE_CHOOSER_ACTION_SAVE)
+		dlg.show()
+		ret_code=dlg.run()
+		ret=None
+		if ret_code==gtk.RESPONSE_DELETE_EVENT: pass
+		elif ret_code==gtk.RESPONSE_ACCEPT: ret=dlg.get_filename()
+		dlg.destroy()
+		return ret
+
+	def reset(self):
+		self.ui.intext.get_buffer().set_text("")
+		self.ui.outtext.get_buffer().set_text("")
+		for inf in self.convstack: inf["hbox"].destroy()
+		self.convstack=[]
+
 	def load_settings(self,fname):
 		try:
 			rcfile=open(fname)
+			self.reset()
 			while 1:
 				line=rcfile.readline()
 				if line=='': break
@@ -310,9 +365,8 @@ class GUI(object):
 		except IOError: pass
 	def run(self):
 		self.load_settings(self.rcfile)
-		self.ui.mainwin.connect('destroy',gtk.main_quit)
+		self.ui.mainwin.connect('destroy',self.on_quit)
 		gtk.main()
-		self.save_settings(self.rcfile)
 
 
 if __name__=='__main__':

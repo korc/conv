@@ -26,6 +26,7 @@
                         <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_new"/>
                       </object>
                     </child>
                     <child>
@@ -34,6 +35,7 @@
                         <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_open"/>
                       </object>
                     </child>
                     <child>
@@ -42,6 +44,7 @@
                         <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_save"/>
                       </object>
                     </child>
                     <child>
@@ -50,6 +53,7 @@
                         <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_saveas"/>
                       </object>
                     </child>
                     <child>
@@ -63,6 +67,7 @@
                         <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_quit"/>
                       </object>
                     </child>
                   </object>
