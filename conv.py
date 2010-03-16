@@ -152,7 +152,7 @@ class GUI(object):
 			print '%s __getattribute__: %s'%(self,key)
 			raise
 	def __init__(self):
-		self.ui=GladeUI(os.path.join(os.path.split(sys.argv[0])[0],'conv.glade'),self)
+		self.ui=gtkutil.GtkBuilderHelper(os.path.join(os.path.split(sys.argv[0])[0],'conv.ui'),self)
 
 		self.rcfile=os.path.expanduser(os.path.join('~','.convert_guirc'))
 
@@ -162,7 +162,6 @@ class GUI(object):
 		self.sbctx=self.ui.sbar.get_context_id(__name__)
 		self.sbstack=[]
 		self.convstack=[]
-
 
 		font=pango.FontDescription('terminus,fixed,monospace')
 		self.ui.intext.modify_font(font)
