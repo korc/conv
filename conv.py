@@ -237,6 +237,19 @@ class GUI(object):
 	def on_filechooserbutton_act(self,*args):
 		print "on_filechooserbutton_act:",args
 
+	def on_read_data(self,menuitem):
+		dlg=gtk.FileChooserDialog("Load data from",
+			buttons=(gtk.STOCK_OK, gtk.RESPONSE_ACCEPT),
+			action=gtk.FILE_CHOOSER_ACTION_OPEN)
+		dlg.show()
+		ret_code=dlg.run()
+		if ret_code==gtk.RESPONSE_ACCEPT:
+			data=open(dlg.get_filename()).read()
+			try: data=data.decode("utf8")
+			except UnicodeDecodeError,e:
+				data=data.encode("hexdump")
+			self.ui.intext.get_buffer().set_text(data)
+		dlg.destroy()
 	def on_conv_moveup(self,btn,hbox):
 		for idx,conv in enumerate(self.convstack):
 			if conv['hbox'] is hbox:
