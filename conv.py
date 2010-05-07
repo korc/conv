@@ -144,12 +144,14 @@ class HexDumpCodec(codecs.Codec):
 			b=[" ".join(["%02x"%ord(c) for c in input[idx+j:idx+j+4]]) for j in range(0,bc,4)] 
 			outlines.append(("%%08X  %%-%ds%%s"%(bc*3+len(b)))%(idx,"  ".join(b),HexDumpCodec.prn_dot(input[idx:idx+bc])))
 		return ("\n".join(outlines),len(input))
-	decode_re=re.compile(r'^(?P<offset>[0-9a-f]+) ?(?P<hex>(?:  ?[0-9a-fA-F]{2})+)  \S*')
+	decode_re=re.compile(r'^(?P<offset>[0-9a-f]+):? ?(?P<hex>(?:  ?[0-9a-f]{2,4})+)  +\S+$',re.I)
 	@staticmethod
 	def decode(input,errors="strict"):
 		output=[]
 		for line in input.split("\n"):
+			if not line.strip(): continue
 			match=HexDumpCodec.decode_re.match(line)
+			if match is None: raise ValueError,"Cannot parse hex in line %r"%(line)
 			output.append(match.group("hex").replace(" ","").decode("hex"))
 		return ("".join(output),len(input))
 
