@@ -238,6 +238,13 @@ class GUI(object):
 
 	def on_filechooserbutton_act(self,*args):
 		print "on_filechooserbutton_act:",args
+	
+	def on_cmdline(self,entry):
+		try: eval(entry.get_text())
+		except Exception,e:
+			self.sbstack.append(self.ui.sbar.push(self.sbctx,"%s: %s"%(e.__class__.__name__,e)))
+		else:
+			for x in self.sbstack: self.ui.sbar.remove_message(self.sbctx,x)
 
 	def on_read_data(self,menuitem):
 		dlg=gtk.FileChooserDialog("Load data from",
@@ -285,11 +292,12 @@ class GUI(object):
 			if name:
 				try:
 					if name.startswith('!'): text=pipe_command(name[1:],text)
+					elif name.startswith("@"): text=eval(name[1:])
 					elif conv['enc'].get_active(): text=text.encode(name)
 					else: text=text.decode(name)
 				except Exception,e:
 					conv['stopimg'].show()
-					self.sbstack.append(self.ui.sbar.push(self.sbctx,str(e)))
+					self.sbstack.append(self.ui.sbar.push(self.sbctx,"%s: %s"%(e.__class__.__name__,e)))
 					return False
 		try: text=text.encode('utf8')
 		except UnicodeDecodeError,e:
@@ -384,9 +392,10 @@ class GUI(object):
 		gtk.main()
 
 
-if __name__=='__main__':
+def main():
 	reg()
 	if len(sys.argv)==1:
+		global gtk,gobject,pango,GtkBuilderHelper
 		import gtk,gobject,pango
 		from krutils.gtkutil import GtkBuilderHelper
 		GUI().run()
@@ -411,3 +420,5 @@ Example:
 			elif opt=='-d': text=text.decode(optarg,*args)
 			elif opt=='-a': args=(optarg,) if optarg else ()
 		sys.stdout.write(text)
+
+if __name__=='__main__': main()

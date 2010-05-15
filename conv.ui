@@ -131,6 +131,7 @@
                       <object class="GtkTextView" id="intext">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="wrap_mode">char</property>
                       </object>
                     </child>
                   </object>
@@ -169,6 +170,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
+                    <property name="wrap_mode">char</property>
                   </object>
                 </child>
               </object>
@@ -185,6 +187,18 @@
         <child>
           <object class="GtkStatusbar" id="sbar">
             <property name="visible">True</property>
+            <child>
+              <object class="GtkEntry" id="cmdline">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">&#x2022;</property>
+                <signal name="activate" handler="on_cmdline"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
